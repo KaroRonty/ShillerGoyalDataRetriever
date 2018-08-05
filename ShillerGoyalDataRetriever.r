@@ -41,6 +41,7 @@ full_data$CAPE[full_data$CAPE == "NA"] <- NA
 full_data$CAPE <- as.numeric(full_data$CAPE)
 full_data$infl <- as.numeric(full_data$infl) * 12
 
+# Calculate total returns
 # First calculate the daily returns
 full_data$diff <- (lag(lead(full_data$P) / full_data$P))
 # Then calculate an index including dividends
@@ -54,6 +55,23 @@ for (i in 1:I(nrow(full_data) - 2)) {
 full_data$tenyear <- NA
 for (i in 1:I(nrow(full_data) - 1)) {
   full_data$tenyear[i + 1] <- (full_data$index[i + 121] / full_data$index[i + 1])^0.1
+}
+
+# Calculate real total returns
+# First calculate inflation
+full_data$cpichange <- lag(lead(full_data$CPI) / full_data$CPI - 1)
+# Calculate daily real returns
+full_data$indexinfl <- full_data$diff - full_data$cpichange
+full_data$index_real <- NA
+# First observation
+full_data$index_real[2] <- (full_data$P[1] + full_data$D[1] / 12) * full_data$indexinfl[2]
+for (i in 1:I(nrow(full_data) - 2)){
+  full_data$index_real[i + 2] <- (full_data$index_real[i + 1] + full_data$D[i + 1] / 12) * full_data$indexinfl[i + 2]
+}
+# Then calculate ten-year real total returns
+full_data$tenyear_real <- NA
+for (i in 1:I(nrow(full_data) - 1)) {
+  full_data$tenyear_real[i + 1] <- (full_data$index_real[i + 121] / full_data$index_real[i + 1])^0.1
 }
 
 # Return only full data
