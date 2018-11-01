@@ -52,10 +52,7 @@ for (i in 1:I(nrow(full_data) - 2)) {
   full_data$index[i + 2] <- (full_data$index[i + 1] + full_data$D[i + 1] / 12) * full_data$diff[i + 2]
 }
 # Calculate ten year returns
-full_data$tenyear <- NA
-for (i in 1:I(nrow(full_data) - 1)) {
-  full_data$tenyear[i + 1] <- (full_data$index[i + 121] / full_data$index[i + 1])^0.1
-}
+full_data$tenyear <- (lead(full_data$index, 12 * 10) / full_data$index) ^ (1 / 10)
 
 # Calculate real total returns
 # First calculate inflation
@@ -69,10 +66,7 @@ for (i in 1:I(nrow(full_data) - 2)){
   full_data$index_real[i + 2] <- (full_data$index_real[i + 1] + full_data$D[i + 1] / 12) * full_data$indexinfl[i + 2]
 }
 # Then calculate ten-year real total returns
-full_data$tenyear_real <- NA
-for (i in 1:I(nrow(full_data) - 1)) {
-  full_data$tenyear_real[i + 1] <- (full_data$index_real[i + 121] / full_data$index_real[i + 1])^0.1
-}
+full_data$tenyear_real <- (lead(full_data$index_real, 12 * 10) / full_data$index_real) ^ (1 / 10)
 
 # Return only full data
 rm(list = setdiff(ls(), "full_data"))
