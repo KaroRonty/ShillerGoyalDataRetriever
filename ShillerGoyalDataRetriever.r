@@ -48,18 +48,20 @@ full_data <- full_data %>%
 # Calculate total returns
 # First calculate the monthly returns
 full_data$diff <- lag(lead(full_data$P) / full_data$P)
+# Calculate moonthly dividend percent
+full_data$div_percent <- full_data$D / full_data$P / 12 + 1
 # Then calculate an index including dividends
 full_data$index <- NA
 # First observation
-full_data$index[2] <- (full_data$P[1] +
-                       full_data$D[1] / 12) *
-                       full_data$diff[2]
+full_data$index[2] <- full_data$P[1] *
+                      full_data$div_percent[2] *
+                      full_data$diff[2]
 
 # Calculate real returns
 for (i in 1:I(nrow(full_data) - 2)) {
-  full_data$index[i + 2] <- (full_data$index[i + 1] +
-                             full_data$D[i + 1] / 12) *
-                             full_data$diff[i + 2]
+  full_data$index[i + 2] <- full_data$index[i + 1] *
+                            full_data$div_percent[ i + 2] *
+                            full_data$diff[i + 2]
   }
 # Calculate ten year returns
 full_data$tenyear <- (lead(full_data$index, 12 * 10) /
@@ -72,18 +74,19 @@ full_data$cpichange <- lag(lead(full_data$CPI) / full_data$CPI)
 full_data$indexinfl <- full_data$diff / full_data$cpichange
 full_data$index_real <- NA
 # First observation
-full_data$index_real[2] <- (full_data$P[2] +
-                            full_data$D[2] / 12) *
-                            full_data$indexinfl[2]
-# TODO 
+full_data$index_real[2] <- full_data$Price[1] *
+                           full_data$div_percent[2] *
+                           full_data$indexinfl[2]
+
 # Calculate real returns including reinvested dividends
 for (i in 1:I(nrow(full_data) - 2)){
-  full_data$index_real[i + 2] <- (full_data$index_real[i + 1] +
-                                  full_data$D[i + 2] / 12) *
-                                  full_data$indexinfl[i + 2]
+  full_data$index_real[i + 2] <- full_data$index_real[i + 1] *
+                                 full_data$div_percent[i + 2] *
+                                 full_data$indexinfl[i + 2]
   }
 # Then calculate ten-year real total returns
-full_data$tenyear_real <- (lead(full_data$index_real, 12 * 10) / full_data$index_real) ^ (1 / 10)
+full_data$tenyear_real <- (lead(full_data$index_real, 12 * 10) /
+                             full_data$index_real) ^ (1 / 10)
 
 # Return only full data
 rm(list = setdiff(ls(), "full_data"))
