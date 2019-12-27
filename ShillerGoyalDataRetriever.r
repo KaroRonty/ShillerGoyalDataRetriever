@@ -55,7 +55,7 @@ full_data <- full_data %>%
 # Calculate total returns
 # First calculate the monthly returns
 full_data$diff <- lag(lead(full_data$P) / full_data$P)
-# Calculate moonthly dividend percent
+# Calculate monthly dividend percent
 full_data$div_percent <- full_data$D / full_data$P / 12 + 1
 # Then calculate an index including dividends
 full_data$index <- NA
@@ -91,9 +91,9 @@ for (i in 1:I(nrow(full_data) - 2)){
     full_data$div_percent[i + 2] *
     full_data$indexinfl[i + 2]
 }
-# Then calculate ten-year real total returns
+# Calculate ten-year real total returns
 full_data$tenyear_real <- (lead(full_data$index_real, 12 * 10) /
                              full_data$index_real) ^ (1 / 10)
 
-# Return only full data
+# Return only full_data
 rm(list = setdiff(ls(), "full_data"))
