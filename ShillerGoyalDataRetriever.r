@@ -5,7 +5,14 @@ library(dplyr) # data formatting
 # Read Shiller data ----
 GET("http://www.econ.yale.edu/~shiller/data/ie_data.xls",
     write_disk(temp <- tempfile(fileext = ".xls")))
-shillerdata <- read_xls(temp, sheet = 3, skip = 7)
+shillerdata <- read_xls(temp, sheet = 3, skip = 7, .name_repair = "minimal")
+
+# Remove unnecessary columns
+# Some have no names so they are removed by position
+shillerdata[, 16] <- NULL
+shillerdata[, 14] <- NULL
+shillerdata[, 12] <- NULL
+shillerdata[, 10] <- NULL
 
 # Format the years and months correctly
 current_year <- format(Sys.time(), "%Y")
@@ -54,15 +61,15 @@ full_data$div_percent <- full_data$D / full_data$P / 12 + 1
 full_data$index <- NA
 # First observation
 full_data$index[2] <- full_data$P[1] *
-                      full_data$div_percent[2] *
-                      full_data$diff[2]
+  full_data$div_percent[2] *
+  full_data$diff[2]
 
 # Calculate real returns
 for (i in 1:I(nrow(full_data) - 2)) {
   full_data$index[i + 2] <- full_data$index[i + 1] *
-                            full_data$div_percent[ i + 2] *
-                            full_data$diff[i + 2]
-  }
+    full_data$div_percent[ i + 2] *
+    full_data$diff[i + 2]
+}
 # Calculate ten year returns
 full_data$tenyear <- (lead(full_data$index, 12 * 10) /
                         full_data$index)^(1 / 10)
@@ -75,15 +82,15 @@ full_data$indexinfl <- full_data$diff / full_data$cpichange
 full_data$index_real <- NA
 # First observation
 full_data$index_real[2] <- full_data$Price[1] *
-                           full_data$div_percent[2] *
-                           full_data$indexinfl[2]
+  full_data$div_percent[2] *
+  full_data$indexinfl[2]
 
 # Calculate real returns including reinvested dividends
 for (i in 1:I(nrow(full_data) - 2)){
   full_data$index_real[i + 2] <- full_data$index_real[i + 1] *
-                                 full_data$div_percent[i + 2] *
-                                 full_data$indexinfl[i + 2]
-  }
+    full_data$div_percent[i + 2] *
+    full_data$indexinfl[i + 2]
+}
 # Then calculate ten-year real total returns
 full_data$tenyear_real <- (lead(full_data$index_real, 12 * 10) /
                              full_data$index_real) ^ (1 / 10)
