@@ -34,7 +34,7 @@ shillerdata <- cbind(dates, shillerdata)
 shillerdata$Date <- NULL
 
 # Read Goyal data ----
-GET("http://www.hec.unil.ch/agoyal/docs/PredictorData2017.xlsx",
+GET("http://www.hec.unil.ch/agoyal/docs/PredictorData2019.xlsx",
     write_disk(temp <- tempfile(fileext = ".xls")))
 goyaldata <- read_xlsx(temp, sheet = 1)
 goyaldata <- select(goyaldata, c("yyyymm", "infl", "b/m"))
