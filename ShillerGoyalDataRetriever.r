@@ -5,7 +5,8 @@ library(dplyr) # data formatting
 # Read Shiller data ----
 GET("http://www.econ.yale.edu/~shiller/data/ie_data.xls",
     write_disk(temp <- tempfile(fileext = ".xls")))
-shillerdata <- read_xls(temp, sheet = 4, skip = 7, .name_repair = "minimal")
+
+shillerdata <- read_xls(temp, sheet = 5, skip = 7, .name_repair = "minimal")
 
 # Remove unnecessary columns
 # Some have no names so they are removed by position
@@ -13,6 +14,9 @@ shillerdata[, 16] <- NULL
 shillerdata[, 14] <- NULL
 shillerdata[, 12] <- NULL
 shillerdata[, 10] <- NULL
+shillerdata[, 14] <- NULL
+shillerdata[, 14] <- NULL
+shillerdata[, 15] <- NULL
 
 # Format the years and months correctly
 current_year <- format(Sys.time(), "%Y")
